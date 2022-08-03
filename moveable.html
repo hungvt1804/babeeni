@@ -1,0 +1,50 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <div
+            id="canvas_wrapper"
+            style="display: inline-block; border: 1px solid"
+        ></div>
+        <img
+            src="data/mau1/shadow1.png"
+            style="position: absolute; display: none"
+        />
+        <script src="lib/p5.js"></script>
+        <!-- <script src="dist/mask.js"></script> -->
+        <script>
+            let x = 100;
+            let y = 100;
+
+            function setup() {
+            createCanvas(512, 512);
+            fill(255, 0, 0);
+            }
+
+            function draw() {
+            if (keyIsDown(LEFT_ARROW)) {
+                x -= 5;
+            }
+
+            if (keyIsDown(RIGHT_ARROW)) {
+                x += 5;
+            }
+
+            if (keyIsDown(UP_ARROW)) {
+                y -= 5;
+            }
+
+            if (keyIsDown(DOWN_ARROW)) {
+                y += 5;
+            }
+
+            clear();
+            ellipse(x, y, 50, 50);
+            }
+        </script>
+    </body>
+</html>

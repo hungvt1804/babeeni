@@ -1,0 +1,70 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <div
+            id="canvas_wrapper"
+            style="display: inline-block; border: 1px solid"
+        ></div>
+        <img
+            src="data/mau1/shadow1.png"
+            style="position: absolute; display: none"
+        />
+        <script src="lib/p5.js"></script>
+        <!-- <script src="dist/mask.js"></script> -->
+        <script>
+            var img;
+
+            function setup() {
+                createCanvas(400, 400);
+
+                img = loadImage("data/mau2/vai.jpg");
+            }
+
+            function draw() {
+                background(220);
+
+                // No scaling
+                // imageMode(CORNER);
+                // image(img, 0, 0);
+
+                // // Image warps because not scaling proportionally
+                // imageMode(CORNER);
+                // image(img, 0, 0, width, height);
+
+                // Image scales proportionally
+                // imageMode(CORNER);
+                // image(img, 0, 0, width, (img.height * width) / img.width); // to fit width
+
+                // Placing image on screen and keeping in proportion
+                var scale = 0.25;
+                imageMode(CENTER);
+                const widthAfterScale = scale * width;
+                const heightAfterScale =
+                    (widthAfterScale * img.height) / img.width;
+                const max = 5;
+                for (let counti = 0; counti < max; counti++) {
+                    for (let countj = 0; countj < max; countj++) {
+                        // this.graphic.image(
+                        //     this.fabric,
+                        //     counti * this.fabric.width,
+                        //     countj * this.fabric.height
+                        // );
+
+                        image(
+                            img,
+                            widthAfterScale * counti,
+                            heightAfterScale * countj,
+                            widthAfterScale,
+                            heightAfterScale
+                        );
+                    }
+                }
+            }
+        </script>
+    </body>
+</html>

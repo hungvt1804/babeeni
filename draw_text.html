@@ -1,0 +1,97 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <div
+            id="canvas_wrapper"
+            style="display: inline-block; border: 1px solid"
+        ></div>
+        <img
+            src="data/mau1/shadow1.png"
+            style="position: absolute; display: none"
+        />
+        <script src="lib/p5.js"></script>
+        <!-- <script src="dist/mask.js"></script> -->
+        <script>
+            /**
+* Text along curve example adapted for p5.js by Kevin Siwoff
+* Original Processing tutorial can be found here: https://processing.org/tutorials/text/
+**/
+
+// The message to be displayed
+var message = "Hello World";
+var font;
+
+var f;
+// The radius of a circle
+var r = 300;
+var radiusCirle = 300
+
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  // The text must be centered!
+  textAlign(CENTER);
+ 
+  // textFont("Georgia");
+  textSize(36);
+  ellipseMode(CENTER);
+  font = loadFont("data/round-monogram/Round_Monogram_Center.ttf");
+}
+
+function draw() {
+  background(0);
+
+  textFont(font);
+    text(message,100,100);
+
+  // Start in the center and draw the circle
+  translate(width / 2, height / 2);
+  noFill();
+  stroke(255);
+  strokeWeight(3);
+  fill(0,0,0);
+  ellipse(0, 0, radiusCirle*2, radiusCirle*2);
+
+  var arclength = 0;
+
+  textFont(font);
+
+
+    // message = message.substr(0,3);
+    // message = "world world"
+  let fullWidth = 0;
+  for (var i = 0; i < message.length; i++)
+  {
+    var currentChar = message.charAt(i);
+    var w = textWidth(currentChar);
+    fullWidth +=w + w/2;
+  }
+  fullWidth -= 5;
+  console.log(fullWidth,radiusCirle);
+  const addCirle = fullWidth/radiusCirle;
+
+  for (var i = 0; i < message.length; i++)
+  {
+    var currentChar = message.charAt(i);
+    var w = textWidth(currentChar);
+    arclength += w/2;
+    var theta = PI/2 - addCirle/2 + arclength / radiusCirle;    
+    push();
+    // translate(radiusCirle*cos(theta), radiusCirle*sin(theta));
+    translate(-radiusCirle*cos(theta), radiusCirle*sin(theta) - 10);
+    // rotate(theta);
+    rotate(PI/2 - theta)
+    
+    text(currentChar,0,0);//+i*20
+    pop();
+    arclength += w;
+  }
+}
+            
+        </script>
+    </body>
+</html>

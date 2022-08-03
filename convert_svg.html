@@ -1,0 +1,326 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+        <script src="https://www.jqueryscript.net/demo/Simple-jQuery-Plugin-For-Highlighting-Image-Map-Maphilight/jquery.maphilight.js"></script>
+        <style>
+            table {
+                width: 100%;
+            }
+            table tr td,
+            table tr th {
+                width: 50%;
+                padding: 5px;
+                text-align: center;
+            }
+            table th {
+                background: #ccc;
+            }
+            .img,
+            .svg {
+                text-align: center;
+            }
+            .img .map {
+                margin: 0 auto;
+            }
+            img {
+                max-width: 100%;
+            }
+            .action {
+                text-align: left;
+            }
+            .singleAction {
+                flex-wrap: wrap;
+                display: flex;
+            }
+            .action .singleAction:nth-child(odd) {
+                background-color: #ccc;
+            }
+            .action p {
+                min-width: 50%;
+                display: inline-flex;
+                box-sizing: border-box;
+                flex: 1;
+                padding: 0px 10px;
+                margin: 10px 0px;
+            }
+            .action p span {
+                flex: 1;
+            }
+            .action p input {
+                width: 100px;
+            }
+        </style>
+    </head>
+    <body>
+        <table>
+            <tr>
+                <th>Ảnh SVG</th>
+                <th>Ảnh Image Map</th>
+            </tr>
+            <tr>
+                <td>
+                    <input type="file" value="Chọn file SVG" id="choose_svg" />
+                </td>
+                <td>
+                    <input type="file" value="Chọn file Ảnh" id="choose_img" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div id="svg_wrapper" class="svg">
+                        <object id="svg_element"></object>
+                    </div>
+                </td>
+                <td>
+                    <div class="img">
+                        <img id="img_element" class="map" usemap="#imageMap" />
+
+                        <map name="imageMap">
+                            <area
+                                id="area_test"
+                                shape="poly"
+                                coords="248,0,292,13,286,28,285,35,284,35,284,38,283,38,283,42,282,42,282,46,278,62,278,70,277,70,278,93,279,93,280,99,291,112,294,116,305,127,307,135,308,135,308,140,309,140,309,144,310,144,310,148,311,148,311,153,321,191,324,209,343,286,346,304,357,347,358,356,367,390,368,399,376,431,366,434,360,434,360,435,354,435,354,436,347,436,347,437,317,439,317,440,296,441,285,441,285,442,260,442,223,443,180,444,162,444,162,443,142,443,109,442,84,442,84,441,65,441,65,440,52,440,52,439,40,439,40,438,31,438,31,437,22,437,22,436,16,436,16,435,10,435,10,434,1,432,0,432,0,429,1,429,3,416,4,416,4,412,5,412,5,407,18,356,19,347,28,313,29,304,30,304,30,300,31,300,31,296,32,296,32,291,33,291,33,287,34,287,34,283,35,283,35,278,49,223,49,218,50,218,50,214,51,214,51,210,52,210,52,205,53,205,53,201,54,201,54,197,55,197,58,180,59,180,60,171,61,171,61,167,62,167,62,162,63,162,63,158,64,158,64,154,65,154,65,150,66,150,68,137,69,137,69,132,70,132,70,128,73,119,99,73,99,58,98,58,96,37,95,37,95,34,94,34,94,31,93,31,93,28,92,28,92,26,91,26,90,20,89,20,87,12,100,9,100,8,107,7,107,6,117,4,117,3,131,0,133,6,141,12,143,12,143,13,145,13,145,14,147,14,147,15,150,15,150,16,152,16,152,17,157,18,157,19,164,20,164,21,168,21,168,22,172,22,172,23,178,23,178,24,189,24,189,25,196,25,196,24,206,24,206,23,211,23,211,22,216,22,216,21,219,21,219,20,222,20,222,19,225,19,225,18,227,18,227,17,230,17,230,16,232,16,232,15,234,15,235,13,239,12,239,11,241,11,242,9,244,9"
+                                href="***Work Path***.html"
+                                alt="Work Path"
+                                title="Work Path"
+                            />
+                        </map>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="action"></div>
+                    <!-- <p>Số Point: <input id="default_num" value="1000" /></p>
+                    <p>Nhân chiều x: <input id="scale_x" value="1" /></p>
+                    <p>Nhân chiều y: <input id="scale_y" value="1" /></p>
+                    <p>Add Px chiều x: <input id="translate_x" value="0" /></p>
+                    <p>Add Px chiều y: <input id="translate_y" value="0" /></p>
+                    <button id="create_image_map">Tạo Image Map</button>
+                    <button id="download_image_map">Download Image Map</button> -->
+                    <button id="create_image_map">Tạo Image Map</button>
+                    <button id="download_image_map">Download Image Map</button>
+                </td>
+                <td>
+                    <textarea
+                        id="output_json"
+                        style="width: 100%; height: 200px"
+                    ></textarea>
+                </td>
+            </tr>
+        </table>
+
+        <script>
+            var choose_svg = document.getElementById("choose_svg");
+
+            choose_svg.onchange = (e) => {
+                var file = choose_svg.files[0];
+                if (file.type === "image/svg+xml") {
+                    var svg_element = document.getElementById("svg_element");
+                    svg_element.data = URL.createObjectURL(file);
+                    svg_element.onload = function () {
+                        var paths =
+                            svg_element.contentDocument.querySelectorAll(
+                                "path"
+                            );
+                        paths.forEach((path) => {
+                            path.setAttribute("fill-opacity", "0.5");
+                            path.setAttribute("stroke-opacity", "0.5");
+                            path.setAttribute("stroke-width", "1");
+                            path.setAttribute("stroke-linecap", "butt");
+                            path.setAttribute("stroke", "blue");
+                            path.setAttribute("fill", "purple");
+                        });
+                        renderActionArea(paths);
+                    };
+                }
+            };
+            var choose_img = document.getElementById("choose_img");
+            choose_img.onchange = (e) => {
+                var file = choose_img.files[0];
+                var img_element = document.getElementById("img_element");
+                img_element.setAttribute("src", URL.createObjectURL(file));
+                img_element.onload = function () {
+                    var width = img_element.width;
+                    var height = img_element.height;
+                    var svg_element = document.getElementById("svg_element");
+                    var svg = svg_element.contentDocument.querySelector("svg");
+                    var viewBox = svg.getAttribute("viewBox");
+                    var vs = viewBox.split(" ");
+                    var scaleX = parseFloat(width) / parseFloat(vs[2]);
+                    var scaleY = parseFloat(height) / parseFloat(vs[3]);
+                    document
+                        .querySelectorAll("[id^=scale_x]")
+                        .forEach((element) => {
+                            element.value = scaleX;
+                        });
+                    document
+                        .querySelectorAll("[id^=scale_y]")
+                        .forEach((element) => {
+                            element.value = scaleY;
+                        });
+
+                    var parentWidth =
+                        document.querySelector(".img").offsetWidth;
+
+                    if (width > 0) {
+                        var zoom = parentWidth / width;
+                        document.querySelector(".img").style.zoom = zoom;
+                    }
+                };
+                $(".map").maphilight();
+            };
+            function renderActionArea(paths) {
+                var str = "";
+                paths.forEach((path, index) => {
+                    "";
+                    str += `
+                    <div class="singleAction">
+                        <p><span>Số Point:</span> <input id="default_num${index}" value="1000" /></p>
+                        <p><span>Nhân chiều x:</span> <input id="scale_x${index}" value="1" /></p>
+                        <p><span>Nhân chiều y:</span> <input id="scale_y${index}" value="1" /></p>
+                        <p><span>Add Px chiều x:</span> <input id="translate_x${index}" value="0" /></p>
+                        <p><span>Add Px chiều y:</span> <input id="translate_y${index}" value="0" /></p>
+                        <p><span>Fill polygon này:</span> <input id="filled${index}" checked type="checkbox" /></p>
+                        <p><span>Disable tạm map ${index}:</span> <input id="disabled${index}" type="checkbox" /></p>
+                    </div>
+                    `;
+                });
+                document.querySelector(".action").innerHTML = str;
+            }
+        </script>
+        <script>
+            var json = [];
+            function round(num) {
+                return Math.round((num + Number.EPSILON) * 1000000) / 1000000;
+            }
+            function flatten(arr) {
+                return arr.reduce(function (flat, toFlatten) {
+                    return flat.concat(
+                        Array.isArray(toFlatten)
+                            ? flatten(toFlatten)
+                            : toFlatten
+                    );
+                }, []);
+            }
+            function createSingleImageMap(path, index) {
+                var NUM_POINTS = document.getElementById(
+                    "default_num" + index
+                ).value;
+                var scale_x = parseFloat(
+                    document.getElementById("scale_x" + index).value
+                );
+                var scale_y = parseFloat(
+                    document.getElementById("scale_y" + index).value
+                );
+
+                var translate_x = parseFloat(
+                    document.getElementById("translate_x" + index).value
+                );
+                var translate_y = parseFloat(
+                    document.getElementById("translate_y" + index).value
+                );
+                var filled = document.getElementById("filled" + index).checked;
+                var singlePoint = [];
+                var singleJson = [];
+
+                var len = path.getTotalLength();
+
+                for (var i = 0; i < NUM_POINTS; i++) {
+                    var pt = path.getPointAtLength(
+                        (i * len) / (NUM_POINTS - 1)
+                    );
+                    var x = round(pt.x) * scale_x + translate_x;
+                    var y = round(pt.y) * scale_y + translate_y;
+                    singlePoint.push([x, y]);
+                    singleJson.push({ x: x, y: y });
+                }
+                return {
+                    point: {
+                        data: singlePoint,
+                        filled: filled,
+                    },
+                    json: {
+                        data: singleJson,
+                        filled: filled,
+                    },
+                };
+            }
+
+            function createImageMap() {
+                var svg_element = document.getElementById("svg_element");
+                var paths =
+                    svg_element.contentDocument.querySelectorAll("path");
+                var points = [];
+                json = [];
+                paths.forEach((path, index) => {
+                    var checkbox = document.getElementById("disabled" + index);
+                    if (!checkbox.checked) {
+                        var result = createSingleImageMap(path, index);
+                        points.push(result.point);
+                        json.push(result.json);
+                    }
+                });
+
+                // document
+                //     .getElementById("area_test")
+                //     .setAttribute("coords", flatten(points[1]));
+
+                var strArea = "";
+                points.forEach((singlePoint, index) => {
+                    strArea += `<area
+                                shape="poly"
+                                coords="${flatten(singlePoint.data)}"
+                                href="#${index}"
+                                alt="Work Path ${index}"
+                                title="Work Path${index}"
+                            />`;
+                });
+
+                document.querySelector("[name=imageMap]").innerHTML = strArea;
+                document.getElementById("output_json").value =
+                    JSON.stringify(json);
+            }
+
+            function makeTextFile(text) {
+                var data = new Blob([text], { type: "text/plain" });
+                var textFile = window.URL.createObjectURL(data);
+                return textFile;
+            }
+            var create = document.getElementById("create_image_map");
+            var download_image_map =
+                document.getElementById("download_image_map");
+            create.addEventListener("click", function () {
+                createImageMap();
+                $(".map").maphilight();
+            });
+
+            download_image_map.addEventListener(
+                "click",
+                function () {
+                    createImageMap();
+                    var link = document.createElement("a");
+                    link.setAttribute("download", "info.txt");
+                    link.href = makeTextFile(JSON.stringify(json));
+                    document.body.appendChild(link);
+
+                    window.requestAnimationFrame(function () {
+                        var event = new MouseEvent("click");
+                        link.dispatchEvent(event);
+                        document.body.removeChild(link);
+                    });
+                },
+                false
+            );
+        </script>
+        <script type="text/javascript">
+            $(function () {
+                $(".map").maphilight();
+            });
+        </script>
+    </body>
+</html>

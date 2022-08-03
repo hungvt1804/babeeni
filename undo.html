@@ -1,0 +1,100 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <div
+            id="canvas_wrapper"
+            style="display: inline-block; border: 1px solid"
+        ></div>
+        <img
+            src="data/mau1/shadow1.png"
+            style="position: absolute; display: none"
+        />
+        <button id="draw">Vẽ thêm</button>
+        <script src="lib/p5.js"></script>
+        <!-- <script src="dist/mask.js"></script> -->
+        <script>
+            let needDraw = false;
+            let previousState;
+            let history = [];
+
+            let stateIndex = 0;
+
+            function setup() {
+                // frameRate(5);
+                createCanvas(400, 400);
+                noLoop();
+                background(255);
+                // save state at beginning for blank canvas
+                saveState();
+            }
+            let countText = 0;
+            function draw() {
+                if (needDraw) {
+                    fill(random(255), random(255), random(255));
+                    const x = random(100, 300);
+                    const y = random(100, 300);
+                    circle(x, y, 20);
+                    fill(0);
+                    textSize(30);
+                    text(countText + "", x, y);
+
+                    countText++;
+                    saveState();
+                    needDraw = false;
+                }
+            }
+
+            function keyPressed(e) {
+                // check if the event parameter (e) has Z (keycode 90) and ctrl or cmnd
+                if (e.keyCode == 90 && (e.ctrlKey || e.metaKey)) {
+                    undoToPreviousState();
+                } else if (e.keyCode == 89 && (e.ctrlKey || e.metaKey)) {
+                    redoToPreviousState();
+                }
+
+                console.log(e.keyCode);
+            }
+            count = 1;
+            function undoToPreviousState() {
+                count++;
+                const prev = history[history.length - count];
+                if (!prev) {
+                    return;
+                }
+                background(255);
+                image(prev, 0, 0);
+            }
+            function redoToPreviousState() {
+                count--;
+                const next = history[history.length - count];
+
+                if (!next) {
+                    return;
+                }
+                background(255);
+                image(next, 0, 0);
+            }
+
+            function saveState() {
+                console.log("saveState");
+                // save state by taking image of background
+                // for more info look at reference for get
+                previousState = get();
+                history.push(previousState);
+            }
+        </script>
+        <script>
+            document
+                .getElementById("draw")
+                .addEventListener("click", function () {
+                    needDraw = true;
+                    draw();
+                });
+        </script>
+    </body>
+</html>

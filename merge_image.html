@@ -1,0 +1,91 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <div
+            id="canvas_wrapper"
+            style="display: inline-block; border: 1px solid"
+        ></div>
+        <img
+            src="data/mau1/shadow1.png"
+            style="position: absolute; display: none"
+        />
+        <script src="lib/p5.js"></script>
+        <!-- <script src="dist/mask.js"></script> -->
+        <script>
+            const boxSize = 1;
+            let components;
+            let gameMap;
+
+            function preload() {
+                // We need to load images in preload to make sure they are available when we're drawing them
+                let tree = loadImage(
+                    "https://www.paulwheeler.us/files/tree.png"
+                );
+                components = [
+                    {
+                        img: loadImage(
+                            "https://www.paulwheeler.us/files/game_map.png"
+                        ),
+                        x: 0,
+                        y: 0,
+                        width: 200,
+                        height: 200,
+                    },
+                    {
+                        img: tree,
+                        x: 20,
+                        y: 100,
+                        width: 56,
+                        height: 70,
+                    },
+                    {
+                        img: tree,
+                        x: 120,
+                        y: 20,
+                        width: 56,
+                        height: 70,
+                    },
+                ];
+            }
+
+            function setup() {
+                createCanvas(windowWidth, windowHeight);
+                gameMap = createGameMapImg();
+            }
+
+            function draw() {
+                let size = min(width, height);
+                image(gameMap, 0, 0);
+            }
+
+            function createGameMapImg() {
+                let gameImg = createGraphics(width * boxSize, height * boxSize);
+
+                gameImg.background(color("white"));
+
+                for (let component of components) {
+                    // I'm not sure why this was in your code, since it looked
+                    // like the goal was to draw the images to the cameImg
+                    // graphics object:
+                    // image(component.img, component.x * boxSize, component.y * boxSize, component.width * boxSize, component.height * boxSize);
+                    if (component.img != undefined) {
+                        gameImg.image(
+                            component.img,
+                            component.x * boxSize,
+                            component.y * boxSize,
+                            component.width * boxSize,
+                            component.height * boxSize
+                        );
+                    }
+                }
+
+                return gameImg;
+            }
+        </script>
+    </body>
+</html>

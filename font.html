@@ -1,0 +1,36 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <div
+            id="canvas_wrapper"
+            style="display: inline-block; border: 1px solid"
+        ></div>
+        <img
+            src="data/mau1/shadow1.png"
+            style="position: absolute; display: none"
+        />
+        <script src="lib/p5.js"></script>
+        <!-- <script src="dist/mask.js"></script> -->
+        <script>
+            let font;
+
+            function setup() {
+                createCanvas(800, 800);
+                font = loadFont("/data/fonts/stack.ttf");
+                frameRate(60);
+            }
+
+            function draw() {
+                clear();
+                textFont(font);
+                textSize(50);
+                text("nS#", mouseX, mouseY);
+            }
+        </script>
+    </body>
+</html>

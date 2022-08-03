@@ -1,0 +1,122 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <script src="lib/fabric.js"></script>
+    </head>
+    <body>
+        <span id="x"></span>-
+        <span id="y"></span>
+        <canvas
+            id="c"
+            width="800"
+            height="800"
+            style="border: 1px solid #aaa"
+        ></canvas>
+        <script id="main">
+            var tmpPoints = [];
+
+            function addEvents(canvas, targetObject) {
+                this.targetTopLeft = targetObject.calcACoords().tl;
+                canvas.on("mouse:wheel", function (opt) {
+                    var delta = opt.e.deltaY;
+                    var zoom = canvas.getZoom();
+                    zoom = zoom + delta / 200;
+                    if (zoom > 20) zoom = 20;
+                    if (zoom < 0.01) zoom = 0.01;
+                    // canvas.setZoom(zoom);
+                    opt.e.preventDefault();
+                    opt.e.stopPropagation();
+                });
+
+                canvas.on("mouse:down", function (opt) {
+                    var evt = opt.e;
+                    if (evt.altKey === true) {
+                        this.isDragging = true;
+                        this.selection = false;
+                        this.lastPosX = evt.clientX;
+                        this.lastPosY = evt.clientY;
+                    }
+                    if (evt.shiftKey === true) {
+                        tmpPoints.push({
+                            x: opt.e.layerX - targetTopLeft.x,
+                            y: opt.e.layerY - targetTopLeft.y,
+                        });
+                    }
+                });
+                canvas.on("mouse:move", function (opt) {
+                    document.getElementById("x").innerHTML =
+                        opt.e.layerX - targetTopLeft.x;
+                    document.getElementById("y").innerHTML =
+                        opt.e.layerY - targetTopLeft.y;
+                    if (this.isDragging) {
+                        var e = opt.e;
+                        this.viewportTransform[4] += e.clientX - this.lastPosX;
+                        this.viewportTransform[5] += e.clientY - this.lastPosY;
+                        this.requestRenderAll();
+                        this.lastPosX = e.clientX;
+                        this.lastPosY = e.clientY;
+                    }
+                });
+                canvas.on("mouse:up", function (opt) {
+                    this.isDragging = false;
+                    this.selection = true;
+                });
+                canvas.on("mouse:click", function (opt) {});
+            }
+            function loadPattern(url, polygon) {
+                polygon.set(
+                    "fill",
+                    new fabric.Pattern({
+                        source: img,
+                        repeat: "repeat",
+                    })
+                );
+            }
+            function loadShadow(canvas) {
+                fabric.Image.fromURL("data/mau1/shadow.svg", function (img) {
+                    canvas.add(img).setActiveObject(img);
+                    canvas.centerObject(img);
+                });
+            }
+            var canvas = (this.__canvas = new fabric.Canvas("c"));
+            (function () {
+                canvas.hoverCursor = "pointer";
+                fabric.Object.prototype.transparentCorners = false;
+                fabric.Object.prototype.cornerStyle = "rect";
+                var radius = 300;
+
+//Điền đường dẫn file vào đây
+                var url_string = window.location.href
+                var url = new URL(url_string);
+                var image = url.searchParams.get("image");
+                fabric.Image.fromURL(image, function (img) {
+                    img.lockMovementX = true;
+                    img.lockMovementY = true;
+                    canvas.add(img).setActiveObject(img);
+                    canvas.centerObject(img);
+                    addEvents(canvas, img);
+                });
+            })();
+
+
+        function initCopy(evt){
+            evt = evt||window.event
+            var c = evt.keyCode
+            var ctrlDown = evt.ctrlKey||evt.metaKey;
+            if (ctrlDown && c==67){
+                var text = document.getElementById("x").innerHTML+','+document.getElementById("y").innerHTML;
+                navigator.clipboard.writeText(text).then(function() {
+                    console.log('Async: Copying to clipboard was successful!');
+                }, function(err) {
+                    console.error('Async: Could not copy text: ', err);
+                });
+            }
+        }
+        document.onkeydown = initCopy;
+        </script>
+        <button onclick="addFilter()">addFilter</button><br />
+    </body>
+</html>

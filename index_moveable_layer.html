@@ -1,0 +1,257 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <style>
+            *{
+                box-sizing: border-box;
+            }
+            .none{
+                display: none;
+            }
+            #main{
+                display:flex;
+                flex-wrap: wrap;
+            }
+            #canvas_wrapper{width: 710px;}
+            #layers{
+                flex:1;
+            }
+            #list_fields{
+                display: flex;
+                flex-wrap: wrap;
+            }
+            #list_fields p{
+                padding: 5px;
+                min-width: 50%;
+                margin: 1px 0px;
+                flex:1;
+                border: 1px solid #3fa20d;
+            }
+            #layers input[type=text], #layers select{
+                width: 100%;
+                margin:2px 0px;
+            }
+            #layer_added table{
+                width: 100%;
+                border-collapse: collapse;
+                border:1px solid #ccc;
+                padding:5px;
+            }
+            #layer_added table thead{
+                background: #eee;
+                font-weight: bold;
+            }
+            #layer_added table td{
+                border-collapse: collapse;
+                border:1px solid #ccc;
+                padding:2px;
+            }
+            #layer_added table tr:nth-child(odd){
+                background:#eee;
+            }
+            #popup_edit{    
+                display:none;position: fixed;
+    background: #e4e4e4;
+    width: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    padding: 20px;}
+    #popup_edit textarea{
+        width: 100%;
+        height: 300px;
+    }
+    table tr:hover {
+    background: #ccc;
+}
+
+        </style>
+    </head>
+    <body>
+        <div>
+            <!-- <button id="redraw">ReDraw</button>
+            <button id="change-fabric">Thay vải áo</button>
+            <button id="change-button">Thay nút áo</button>
+            <button id="export-json">Xuất file Json</button>
+            <button id="change-font-center">Thay Font Center</button>
+            <button id="change-font-right">Thay Font Right</button> -->
+
+            <button id="export-json" onclick="TechBabee.P5Helper.exportJson()">Xuất file Json</button>
+
+            <label style="    display: inline;
+            background: #ffb4b4;
+            padding: 2px 15px;
+            user-select: none;
+            margin-right: 10px;">
+                <input checked type="checkbox" id="auto_draw">
+                Tự động vẽ khi config thay đổi
+            </label>
+            <label for="">
+                <input type="text" id="mouse_xy"/>
+                Tọa độ
+            </label>
+                <a href="convert_svg.html" target="_blank">Convert Svg</a>
+                <a id="link_get_coords" target="_blank">Lấy tọa độ</a>
+            <span style="color:red;font-weight:bold;text-transform:uppercase" id="error"></span>
+        </div>
+        <div>
+            <button onclick="document.body.style.overflow == 'hidden'?document.body.style.overflow= 'auto':document.body.style.overflow='hidden'">Toogle Overflow hidden</button>
+            Chọn layer di chuyển
+            <select id="layer_moveable">
+                <option value="0">Không chọn layer nào</option>
+            </select>
+            <span id="moveable_position"></span>
+            <button onclick="VIEWER.copyMovedPosition()">Copy</button>
+        </div>
+       <div id="main">
+        <div
+            id="canvas_wrapper"
+            style="display: inline-block; border: 1px solid"
+        >
+    </div>
+        <div id="layers" style="display: inline-block; border: 1px solid">
+            <button id="delete_template">XÓA TEMPLATE</button>
+            <button id="load_template_from_file">LOAD TEMPLATE From File</button>
+            <button id="replace_string">Replace String template</button>
+            <div id="layer_added">
+                <table>
+                    <thead> 
+                        <tr>
+                            <td>Name</td>
+                            <td>Text</td>
+                            <td>Position</td>
+                            <td>Order</td>
+                            <td>Group</td>
+                            <td>Point</td>
+                            <td>Chặn</td>
+                            <td></td>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <p style="    background: #bb0000;
+            color: #fff;
+            padding: 10px;">
+                <span>Tên Mẫu *</span>
+                <input type="text" name="template_name" oninput="__id('link_get_coords').href='fabric_coords.html?image=data/'+this.value+'/full.png'" placeholder="Tên mẫu" />
+            </p>
+            <h4>Thêm layer</h4>
+            <div id="list_fields">
+                <p>
+                    <span>Text Layer</span>
+                    <input type="text" name="text" oninput= "__query('[name=name]').value = ADD_LAYER.removeVietnameseTones(this.value.toLowerCase());__query('[name=name]').dispatchEvent(new Event('input'));" placeholder="Text Layer" />
+                </p>
+
+                <p>
+                    <span>Tên Layer *</span>
+                    <input type="text" oninput="this.value = ADD_LAYER.removeVietnameseTones(this.value); __query('[name=group_name').value = 'group_'+this.value; __id('order').value = ((Array.isArray(template.layers)?template.layers.length:0)+1)*10" name="name" placeholder="Tên Layer không dấu, không khoảng trắng" />
+                </p>
+                
+                <p>
+                    <span style="display:block" >Group Layer</span>
+                    <span style="display:block;font-size: 12px;color: red;">Layer người dùng tác động như <b>thay đổi vải, icon, text</b> => ĐẶT TÊN GROUP</span>
+                    <span style="display:block;font-size: 12px;color: red;">Layer cùng tác động => Cần chung 1 group name</span>
+                    <span style="display:block;font-size: 12px;color: red;">Mặc định sẽ để group name = 'group'+ _ +name layer</span>
+                    <input type="text" name="group_name" id="group_name" placeholder="Group Layer" />
+                </p>
+                <p>
+                    <span>Vị trí Layer *</span>
+                    <select name="position" onchange="this.value == 'point'?__id('position_point').style.display='block':__id('position_point').style.display='none'">
+                        <option value="center">Center</option>
+                        <option value="point">Point</option>
+                    </select>
+                    <input type="text" id = "position_point" style="display: none;" name="position_point" placeholder="Tọa độ x, y ví dụ: 20,160" />
+                </p>
+                <p>
+                    <span style="display: block;">Hình ảnh: 
+                        <b>Chú ý tên hình ảnh dạng thư mục /data/tên mẫu/tên ảnh</b>
+                    </span>
+                    <input type="file" name="image" onchange="__id('image_preview').src='data/'+document.querySelector('[name=template_name]').value+'/'+this.files[0].name" placeholder="Text Layer" />
+                    <img src="" id="image_preview" style="width:50px;max-height:50px"/>
+                </p>
+                <p>
+                    <span>Loại Layer *</span>
+                    <select name="type" onchange="ADD_LAYER.showTypeBlock(this.value)">
+                        <option value="image">Image</option>
+                        <option value="polygon">Polygon</option>
+                        <option value="text">Text</option>
+                        <option value="circle_text">Circle Text</option>
+                        <option value="trim">Trim</option>
+                    </select>
+
+                    <select name="image_draw" id="image_draw" class="input_for_image" onchange="ADD_LAYER.showTypeBlockDraw(this.value)">
+                        <option value="auto">Chọn kích cỡ co ảnh, mặc định là giữ nguyên tỉ lệ</option>
+                        <option value="ratio">Co theo tỉ lệ phần trăm</option>
+                        <option value="fixed">Fix cứng cả width và height</option>
+                        <option value="fixWidth">Fix cứng width, auto height</option>
+                        <option value="fixHeight">Fix cứng height, auto width</option>
+                    </select>
+
+                    <input type="text" name="image_draw_percent" id="image_draw_percent" class="input_for_image input_for_image_ratio" placeholder="Phần trăm co ảnh, từ 0 -> 100">
+                    <input type="text" name="image_draw_width" id="image_draw_width" class="input_for_image input_for_image_fix width none" placeholder="Kích cỡ width, mặc định 100px">
+                    <input type="text" name="image_draw_height" id="image_draw_height" class="input_for_image input_for_image_fix height none" placeholder="Kích cỡ height, mặc định 100px">
+
+                    <textarea placeholder="Nhập Tọa độ polygon vào đây" style="width:100%;height:100px;display:none" id="polygon_coords" name="polygon_coords"></textarea>
+
+                    <input type="text" class="input_for_text none" id="text_sample" name="text_sample"  placeholder="Text demo hiển thị, mặc định là Tech5s"/>
+                    <input type="text" class="input_for_text none" id="text_max_length" name="text_max_length" placeholder="Số ký tự tối đa, mặc định = 3"/>
+                    <input type="text" class="input_for_text none" id="text_size" name="text_size" placeholder="Kích cỡ chữ, mặc định = 30"/>
+                    <input type="text" class="input_for_text none" id="text_padding_bottom" name="text_padding_bottom" placeholder="Padding Bottom, mặc định = 0"/>
+                    <input type="text" class="input_for_text none" disabled id="text_position" name="text_position" placeholder="Vị trí chữ hiển thị, mặc định center, center"/>
+
+
+                    <input type="text" class="input_for_circle_text none" id="text_radius_circle" name="text_radius_circle" placeholder="Bán kính vòng tròn, mặc định 100"/>
+                    
+                </p>
+                <p>
+                    <span>Layer Order</span>
+                    <input type="text" name="order" id="order"  placeholder="Thứ tự Layer" />
+                </p>
+            </div>
+            <p>
+                <button id="add_layer">Add layer</button>
+                <button id="download_config">Download Config</button>
+                <button id="run_test">Chạy thử file Config</button>
+                <p style="color:Red">File config cần lưu trước khi chạy, file config cần lưu tại địa chỉ <b>data/tên mẫu/config.json.</b></p style="color:Red">
+
+            </p>
+            <ul>
+                <li>- Nếu vải có chiều xoay (fabric): thêm thuộc tính angle = góc, xem <a href="data/rac/xoay.png">ảnh</a> </li>
+                <li>- Nếu muốn xoay cả layer đó 1 góc thì thêm: rotate_angle = góc, xem <a href="data/rac/xoay_layer.png">ảnh</a> Ví dụ như layer text này phải xoay cả layer nền + xoay layer text + draw_frame_image = true</li>
+                <li>- Nếu muốn in ảnh trong layer text thì thêm: draw_frame_image: true</li>
+            </ul>
+            
+        </div>
+       </div>
+       <div id="main_second">
+           
+       </div>
+        <img
+            src="data/mau1/shadow1.png"
+            style="position: absolute; display: none"
+        />
+        <div id="popup_edit" >
+            <h3 id="popup_title"></h3>
+            <small style="color:red">Sửa cấu trúc json, phần polygon nếu khó đọc nên vào trong file để sửa</small style="color:red">
+            <textarea id="edit_content"></textarea>
+            <button onclick="POPUP.save()" id="popup_save">Lưu</button>
+            <button onclick="POPUP.hide()" id="popup_close">Đóng</button>
+        </div>
+        <script src="lib/p5.js"></script>
+        <!-- <script src="dist/mask.js"></script> -->
+        <script src="dist/TechBabee.js"></script>
+        <!-- <script src="dist/script.js"></script> -->
+
+
+        
+        <script src="dist/moveable.js"></script>
+        <script src="dist/add_layer.js"></script>
+        <script>
+
+        </script>
+    </body>
+</html>

@@ -1,0 +1,61 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <div
+            id="canvas_wrapper"
+            style="display: inline-block; border: 1px solid"
+        ></div>
+        <img
+            src="data/mau1/shadow1.png"
+            style="position: absolute; display: none"
+        />
+        <script src="lib/p5.js"></script>
+        <!-- <script src="dist/mask.js"></script> -->
+        <script>
+            function setup() {
+                createCanvas(300, 300);
+            }
+
+            // (-5, 15) measured form the center of the rectangle
+            let pivot_x = -5,
+                pivot_y = 15;
+
+            // Position at which the pivot point should be moved in the world
+            let target_x = 150,
+                target_y = 100;
+
+            let angle = 0;
+            let angle_change = 0.01;
+
+            function draw() {
+                background(100);
+
+                push();
+
+                translate(target_x, target_y);
+                rotate(0.2);
+                // translate(-pivot_x, -pivot_y);
+
+                noFill();
+                stroke(0);
+                // rectMode(CENTER);
+                rect(0, 0, 100, 30);
+
+                pop();
+
+                noStroke();
+                fill(255, 0, 0);
+                circle(target_x, target_y, 5);
+
+                angle += angle_change;
+                if (abs(angle) > 0.5) angle_change *= -1;
+                noLoop();
+            }
+        </script>
+    </body>
+</html>

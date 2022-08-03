@@ -1,0 +1,65 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <style>
+            #main {
+                display: flex;
+                flex-wrap: wrap;
+            }
+            #canvas_wrapper {
+            }
+            #layers {
+                flex: 1;
+            }
+            #layers p {
+                margin: 10px;
+            }
+            #layers input[type="text"],
+            #layers select {
+                width: 100%;
+                margin: 2px 0px;
+            }
+            .button {
+                display: inline;
+            }
+            .button.disabled {
+                cursor: not-allowed;
+                user-select: none;
+            }
+            .button.disabled button {
+                background: #ccc;
+                border: none;
+                pointer-events: none;
+            }
+            @font-face {
+                font-family: stack;
+                src: url(data/fonts/stack.ttf);
+            }
+        </style>
+    </head>
+    <body>
+        <div id="control_wrapper"></div>
+        <div id="main">
+            <div
+                id="canvas_wrapper"
+                style="
+                    display: inline-block;
+                    border: 1px solid;
+                    position: relative;
+                "
+            ></div>
+        </div>
+        <div id="chooselayer">
+            <select name="layer1" id="layer1"></select>
+        </div>
+        <script src="lib/p5.js"></script>
+        <script src="dist/TechBabee.js"></script>
+        <script src="dist/sample.js"></script>
+        <script src="dist/demo.js"></script>
+        <script src="dist/control.js"></script>
+        <script></script>
+    </body>
+</html>
